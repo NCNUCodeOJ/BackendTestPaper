@@ -53,3 +53,12 @@ func AutoMigrateAll() {
 	DB.AutoMigrate(&Question{})
 	DB.AutoMigrate(&Option{})
 }
+
+//Ping ping a database
+func Ping() error {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Ping()
+}

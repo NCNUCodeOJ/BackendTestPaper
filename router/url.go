@@ -74,6 +74,8 @@ func SetupRouter() *gin.Engine {
 		}))
 	}
 
+	r.GET("/ping", views.Pong)
+
 	// testpaper 測驗卷
 	// Group 可以讓網址延伸，不用重複寫
 	testpaper := r.Group(privateURL + "/testpaper")
