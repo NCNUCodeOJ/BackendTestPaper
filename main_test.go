@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -82,42 +81,6 @@ func TestGetQuestion(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", token)
 	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestUpdateQuestion(t *testing.T) {
-	var questionData = []byte(`{
-		"question": "question1patchtest",
-		"author": 1,
-		"layer": 1,
-		"source": "1",
-		"difficulty": 1,
-		"type": 1
-	}`)
-	r := router.SetupRouter()
-	w := httptest.NewRecorder() // 取得 ResponseRecorder 物件
-	req, _ := http.NewRequest("PATCH", "/api/v1/question/"+strconv.Itoa(questionID), bytes.NewBuffer(questionData))
-	req.Header.Set("Authorization", token)
-	r.ServeHTTP(w, req)
-	body, _ := ioutil.ReadAll(w.Body)
-	fmt.Println(string(body))
-	s := struct {
-		Message string `json:"message"`
-	}{}
-	json.Unmarshal(body, &s)
-}
-
-func TestDeleteQuestion(t *testing.T) {
-	r := router.SetupRouter()
-	w := httptest.NewRecorder() // 取得 ResponseRecorder 物件
-	req, _ := http.NewRequest("DELETE", "/api/v1/question/"+strconv.Itoa(questionID), bytes.NewBuffer(make([]byte, 1000)))
-	req.Header.Set("Authorization", token)
-	r.ServeHTTP(w, req)
-	body, _ := ioutil.ReadAll(w.Body)
-	s := struct {
-		Message string `json:"message"`
-	}{}
-	json.Unmarshal(body, &s)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
