@@ -68,27 +68,27 @@ func ListOptionsByQuestionID(questionID uint) (option Option, err error) {
 	return
 }
 
-// UpdateQuestion 更新題目
-func UpdateQuestion(question *Question) (err error) {
-	err = DB.Save(&question).Error
-	return
-}
+// // UpdateQuestion 更新題目
+// func UpdateQuestion(question *Question) (err error) {
+// 	err = DB.Save(&question).Error
+// 	return
+// }
 
-// UpdateOption 更新選項/答案 (更新題目時)
-func UpdateOption(questionID uint) (err error) {
-	var option Option
-	err = DB.Model(&Option{}).Where("question_id = ?", questionID).First(&option).Save(&option).Error
-	return
-}
+// // UpdateOption 更新選項/答案 (更新題目時)
+// func UpdateOption(questionID uint) (err error) {
+// 	var option Option
+// 	err = DB.Model(&Option{}).Where("question_id = ?", questionID).First(&option).Save(&option).Error
+// 	return
+// }
 
-// DeleteQuestion 刪除題目
-func DeleteQuestion(question Question) (err error) {
-	err = DB.Where("id = ?", question.ID).Delete(&question).Error
-	return
-}
+// // DeleteQuestion 刪除題目
+// func DeleteQuestion(question Question) (err error) {
+// 	err = DB.Where("id = ?", question.ID).Delete(&question).Error
+// 	return
+// }
 
-// DeleteOptions 刪除題目內的所有選項(刪除題目時)
-func DeleteOptions(questionID uint) (err error) {
-	err = DB.Where(&Option{QuestionID: questionID}).Delete(&Option{}).Error
-	return
-}
+// // DeleteOptions 刪除題目內的所有選項(刪除題目時)
+// func DeleteOptions(questionID uint) (err error) {
+// 	err = DB.Where(&Option{QuestionID: questionID}).Delete(&Option{}).Error
+// 	return
+// }

@@ -87,8 +87,8 @@ func SetupRouter() *gin.Engine {
 		question.POST("", views.CreateQuestion)
 		question.GET("", views.ListQuestions)
 		question.GET("/:questionID", views.GetQuestion)
-		question.PATCH("/:questionID", views.UpdateQuestion)
-		question.DELETE("/:questionID", views.DeleteQuestion)
+		// question.PATCH("/:questionID", views.UpdateQuestion)
+		// question.DELETE("/:questionID", views.DeleteQuestion)
 		// 對使用者而言，一個問題就是一個物件
 	}
 	r.NoRoute(func(c *gin.Context) {

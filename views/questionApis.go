@@ -2,13 +2,11 @@ package views
 
 import (
 	"fmt"
-	"math/bits"
 	"net/http"
 	"strconv"
 
 	"github.com/NCNUCodeOJ/BackendTestPaper/models"
 	"github.com/gin-gonic/gin"
-	"github.com/vincentinttsh/replace"
 	"github.com/vincentinttsh/zero"
 )
 
@@ -123,87 +121,87 @@ func GetQuestion(c *gin.Context) {
 	})
 }
 
-// UpdateQuestion 更新題目 (包含選項/答案)
-func UpdateQuestion(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Params.ByName("questionID"), 10, bits.UintSize)
+// // UpdateQuestion 更新題目 (包含選項/答案)
+// func UpdateQuestion(c *gin.Context) {
+// 	id, err := strconv.ParseUint(c.Params.ByName("questionID"), 10, bits.UintSize)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "system error",
-		})
-		return
-	}
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "system error",
+// 		})
+// 		return
+// 	}
 
-	var questionData struct {
-		Question   *string          `json:"question"`
-		Author     *uint            `json:"author"`
-		Layer      *uint            `json:"layer"`
-		Source     *string          `json:"source"`
-		Difficulty *uint            `json:"difficulty"`
-		Type       *uint            `json:"type"`
-		OptionList []*models.Option `json:"options"`
-	}
+// 	var questionData struct {
+// 		Question   *string          `json:"question"`
+// 		Author     *uint            `json:"author"`
+// 		Layer      *uint            `json:"layer"`
+// 		Source     *string          `json:"source"`
+// 		Difficulty *uint            `json:"difficulty"`
+// 		Type       *uint            `json:"type"`
+// 		OptionList []*models.Option `json:"options"`
+// 	}
 
-	if err := c.BindJSON(&questionData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "json error",
-			"error":   err.Error(),
-		})
-		return
-	}
+// 	if err := c.BindJSON(&questionData); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "json error",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	question, err := models.GetQuestion(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "question not found",
-		})
-		return
-	}
+// 	question, err := models.GetQuestion(uint(id))
+// 	if err != nil {
+// 		c.JSON(http.StatusNotFound, gin.H{
+// 			"message": "question not found",
+// 		})
+// 		return
+// 	}
 
-	if err := models.UpdateOption(uint(id)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "system error",
-			"error":   err.Error(),
-		})
-		return
-	}
-	replace.Replace(&question, &questionData)
-	err = models.UpdateQuestion(&question)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "update error",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "update success",
-	})
-}
+// 	if err := models.UpdateOption(uint(id)); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "system error",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	replace.Replace(&question, &questionData)
+// 	err = models.UpdateQuestion(&question)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "update error",
+// 		})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"message": "update success",
+// 	})
+// }
 
-// DeleteQuestion 刪除題目 (包含選項/答案)
-func DeleteQuestion(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Params.ByName("questionID"), 10, bits.UintSize)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
-		})
-		return
-	}
-	question, err := models.GetQuestion(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
-		})
-		return
-	}
-	err = models.DeleteQuestion(question)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "刪除失敗",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "刪除成功",
-	})
-}
+// // DeleteQuestion 刪除題目 (包含選項/答案)
+// func DeleteQuestion(c *gin.Context) {
+// 	id, err := strconv.ParseUint(c.Params.ByName("questionID"), 10, bits.UintSize)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "系統錯誤",
+// 		})
+// 		return
+// 	}
+// 	question, err := models.GetQuestion(uint(id))
+// 	if err != nil {
+// 		c.JSON(http.StatusNotFound, gin.H{
+// 			"message": "查無資料",
+// 		})
+// 		return
+// 	}
+// 	err = models.DeleteQuestion(question)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "刪除失敗",
+// 		})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"message": "刪除成功",
+// 	})
+// }
