@@ -1,7 +1,6 @@
 package views
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -55,10 +54,8 @@ func CreateQuestion(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "題目新增失敗",
 			})
-			fmt.Println(option)
 			return
 		}
-		fmt.Println(option)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "新增成功",
