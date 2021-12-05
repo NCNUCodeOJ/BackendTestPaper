@@ -23,14 +23,14 @@ func CreateTopic(c *gin.Context) {
 	var topic models.Topic
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "未按照格式填寫",
+			"message": "Please fill the field according to the form.",
 		})
 		return
 	}
 	// 如果有空值，則回傳 false
 	if zero.IsZero(data) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "所有欄位不可為空值",
+			"message": "The field cannot be empty.",
 		})
 		return
 	}
@@ -40,7 +40,7 @@ func CreateTopic(c *gin.Context) {
 	topic.Sort = *data.Sort
 	models.CreateTopic(&topic)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "新增成功",
+		"message": "Create successfully.",
 	})
 }
 
@@ -56,7 +56,7 @@ func ListTopics(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "尚無內容",
+			"message": "Not found.",
 		})
 	}
 }
@@ -66,21 +66,21 @@ func GetTopicBySort(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("testpaperID"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	sort, err := strconv.Atoi(c.Params.ByName("sort"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	topic, err := models.GetTopicBySort(uint(id), uint(sort))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
@@ -97,14 +97,14 @@ func UpdateTopic(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("testpaperID"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	sort, err := strconv.Atoi(c.Params.ByName("sort"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
@@ -117,7 +117,7 @@ func UpdateTopic(c *gin.Context) {
 	topic, err := models.GetTopicBySort(uint(id), uint(sort))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
@@ -125,12 +125,12 @@ func UpdateTopic(c *gin.Context) {
 	err = models.UpdateTopic(&topic)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "更新失敗",
+			"message": "Fail.",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "更新成功",
+		"message": "Update successfully.",
 	})
 }
 
@@ -139,32 +139,32 @@ func DeleteTopic(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Params.ByName("testpaperID"), 10, bits.UintSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	sort, err := strconv.ParseUint(c.Params.ByName("sort"), 10, bits.UintSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	topic, err := models.GetTopicBySort(uint(id), uint(sort))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
 	err = models.DeleteTopic(topic)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "刪除失敗",
+			"message": "Fail.",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "刪除成功",
+		"message": "Delete successfully.",
 	})
 }

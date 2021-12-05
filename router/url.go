@@ -91,6 +91,12 @@ func SetupRouter() *gin.Engine {
 		// question.DELETE("/:questionID", views.DeleteQuestion)
 		// 對使用者而言，一個問題就是一個物件
 	}
+	privatequestion := r.Group(privateURL + "/question")
+	question.Use(authMiddleware.MiddlewareFunc())
+	question.Use(getUserInfo())
+	{
+		privatequestion.GET("/:questionID", views.GetQuestionPrivate)
+	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Page not found"})
 	})
