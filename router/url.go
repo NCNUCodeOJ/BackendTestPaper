@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"time"
 
 	"github.com/NCNUCodeOJ/BackendTestPaper/views"
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -58,6 +60,22 @@ func SetupRouter() *gin.Engine {
 	baseURL := "api/v1"
 	privateURL := "api/private/v1"
 	r := gin.Default()
+
+	// CORS
+	if os.Getenv("FrontendURL") != "" {
+		origins := strings.Split(os.Getenv("FrontendURL"), ",")
+		log.Println(origins)
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     origins,
+			AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+			AllowHeaders:     []string{"Origin, Authorization, Content-Type, Accept"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
+
+	r.GET("/ping", views.Pong)
+
 	// testpaper 測驗卷
 	// Group 可以讓網址延伸，不用重複寫
 	testpaper := r.Group(privateURL + "/testpaper")

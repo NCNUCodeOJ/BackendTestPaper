@@ -12,6 +12,7 @@ import (
 
 	"github.com/NCNUCodeOJ/BackendTestPaper/models"
 	"github.com/NCNUCodeOJ/BackendTestPaper/router"
+	"github.com/gin-gonic/gin"
 )
 
 var srv *http.Server
@@ -20,7 +21,7 @@ func start() {
 	models.Setup()
 
 	r := router.SetupRouter()
-	if os.Getenv("GIN_MODE") != "release" {
+	if gin.Mode() == "debug" {
 		srv = &http.Server{
 			Addr:    "localhost:8080",
 			Handler: r,
