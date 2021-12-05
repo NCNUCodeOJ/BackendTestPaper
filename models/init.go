@@ -19,7 +19,7 @@ var DB *gorm.DB
 //Setup 資料庫連接設定
 func Setup() {
 	var err error
-	if os.Getenv("GIN_MODE") != "release" {
+	if gin.Mode() == "debug" {
 		err = godotenv.Load()
 		if err != nil {
 			log.Println("Error loading .env file")
