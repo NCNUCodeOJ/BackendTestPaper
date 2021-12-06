@@ -14,15 +14,31 @@ import (
 
 // CreateTopic 新增
 func CreateTopic(c *gin.Context) {
+
+	var err error
+	var testpaperID uint
+	var testpapper models.TestPaper
+	var count int64
 	// 使用者傳過來的檔案格式(名稱、出卷者、對應的課堂、是否亂數出題)
 	var topicData struct {
-		TestPaperID  *uint    `json:"testPaper_id"`
 		Distribution *float64 `json:"distribution"`
-		TopicSort    *uint    `json:"topic_sort"`
-		QuestionID   *uint    `json:"question_id"`
-		QuestionSort *uint    `json:"question_sort"`
-		Type         *uint    `json:"type"`
+		Questions    []*uint  `json:"questions"`
 	}
+
+	if ID, err := strconv.Atoi(c.Params.ByName("testpaperID")); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "system error.",
+		})
+	} else {
+		testpaperID = uint(ID)
+	}
+
+	if testpapper, err = models.GetTestPaperByID(testpaperID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Not found.",
+		})
+	}
+
 	var topic models.Topic
 	if err := c.BindJSON(&topicData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -30,6 +46,7 @@ func CreateTopic(c *gin.Context) {
 		})
 		return
 	}
+
 	// 如果有空值，則回傳 false
 	if zero.IsZero(topicData) {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -37,16 +54,20 @@ func CreateTopic(c *gin.Context) {
 		})
 		return
 	}
-	topic.TestPaperID = *topicData.TestPaperID
+
+	if count, err = models.GetTestpaperTopicCount(testpaperID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "System error.",
+		})
+		return
+	}
+
+	topic.TestPaperID = testpapper.ID
 	topic.Distribution = *topicData.Distribution
-	topic.Sort = *topicData.TopicSort
-	models.CreateTopic(&topic)
-	var questionTopic models.QuestionTopic
-	questionTopic.TopicID = topic.ID
-	questionTopic.QuestionID = *topicData.QuestionID
-	questionTopic.Sort = *topicData.QuestionSort
-	questionTopic.Type = *topicData.Type
-	models.CreateQuestionTopic(&questionTopic)
+	topic.Sort = uint(count + 1)
+
+	models.CreateTopic(&topic, topicData.Questions)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Create successfully.",
 	})
@@ -54,7 +75,7 @@ func CreateTopic(c *gin.Context) {
 
 // ListTopics 透過 testpaper_id 取得測驗卷
 func ListTopics(c *gin.Context) {
-	testpaperID, err := strconv.Atoi(c.Params.ByName("tetspaperID"))
+	testpaperID, err := strconv.Atoi(c.Params.ByName("testpaperID"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "System error.",
@@ -92,19 +113,14 @@ func GetTopicBySort(c *gin.Context) {
 		})
 		return
 	}
-	topic, err := models.GetTopicBySort(uint(testpaperID), uint(sort))
+	data, err := models.GetTopicDataBySort(uint(testpaperID), uint(sort))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Not found.",
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"id":           topic.ID,
-		"distribution": topic.Distribution,
-		"testpaper_id": topic.TestPaperID,
-		"sort":         topic.Sort,
-	})
+	c.JSON(http.StatusOK, data)
 }
 
 // UpdateTopic 更新大題
@@ -150,17 +166,17 @@ func UpdateTopic(c *gin.Context) {
 		})
 		return
 	}
-	questionTopic, err := models.GetQuestionTopic(uint(topic.ID), uint(*data.QuestionID))
-	if err != nil {
-		var questionTopic models.QuestionTopic
-		questionTopic.TopicID = topic.ID
-		questionTopic.QuestionID = *data.QuestionID
-		questionTopic.Sort = *data.QuestionSort
-		questionTopic.Type = *data.Type
-		models.CreateQuestionTopic(&questionTopic)
-	} else {
-		models.DeleteQuestionTopic(questionTopic)
-	}
+	// questionTopic, err := models.GetQuestionTopic(uint(topic.ID), uint(*data.QuestionID))
+	// if err != nil {
+	// 	var questionTopic models.QuestionTopic
+	// 	questionTopic.TopicID = topic.ID
+	// 	questionTopic.QuestionID = *data.QuestionID
+	// 	questionTopic.Sort = *data.QuestionSort
+	// 	questionTopic.Type = *data.Type
+	// 	models.CreateQuestionTopic(&questionTopic)
+	// } else {
+	// 	models.DeleteQuestionTopic(questionTopic)
+	// }
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Update successfully.",
 	})

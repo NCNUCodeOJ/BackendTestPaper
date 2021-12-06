@@ -8,19 +8,11 @@ type QuestionTopic struct {
 	TopicID    uint `gorm:"NOT NULL;"`
 	QuestionID uint `gorm:"NOT NULL;"`
 	Sort       uint `gorm:"NOT NULL;"`
-	Random     bool `gorm:"NOT NULL;"`
-	Type       uint `gorm:"NOT NULL;"`
 	// 對應的第幾大題
 	// 配分
 	// 對應的題目 ID
 	// 排序(第幾大題下的第幾題)
 	// 選項是否隨機呈現(作答時)
-	// 題型(選擇或填充)
-}
-
-// CreateQuestionTopic 新增填充題們
-func CreateQuestionTopic(QuestionTopic *QuestionTopic) {
-	DB.Create(&QuestionTopic)
 }
 
 // ListQuestionTopicsByTopicID 用 topic_id 取得所有 QuestionTopic

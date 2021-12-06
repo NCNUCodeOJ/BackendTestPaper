@@ -36,6 +36,7 @@ func getUserInfo() gin.HandlerFunc {
 
 // SetupRouter index
 func SetupRouter() *gin.Engine {
+
 	if gin.Mode() == "test" {
 		err := godotenv.Load(".env.test")
 		if err != nil {
@@ -47,6 +48,7 @@ func SetupRouter() *gin.Engine {
 			log.Println("Error loading .env file")
 		}
 	}
+
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:            "NCNUOJ",
 		SigningAlgorithm: "HS512",
@@ -54,11 +56,14 @@ func SetupRouter() *gin.Engine {
 		MaxRefresh:       time.Hour,
 		TimeFunc:         time.Now,
 	})
+
 	if err != nil {
 		log.Fatal("JWT Error:" + err.Error())
 	}
+
 	baseURL := "api/v1"
 	privateURL := "api/private/v1"
+
 	r := gin.Default()
 
 	// CORS
@@ -83,11 +88,11 @@ func SetupRouter() *gin.Engine {
 	testpaper.Use(getUserInfo())
 	{
 		testpaper.POST("", views.CreateTestPaper)
-		testpaper.GET("", views.ListTestPapers)
 		testpaper.GET("/:testpaperID", views.GetTestPaperByID)
 		testpaper.PATCH("/:testpaperID", views.UpdateTestPaper)
 		testpaper.DELETE("/:testpaperID", views.DeleteTestPaper)
 	}
+
 	// topic 大題
 	topic := r.Group(privateURL + "/testpaper/:testpaperID/topic")
 	{
@@ -97,6 +102,7 @@ func SetupRouter() *gin.Engine {
 		topic.PATCH("/:sort", views.UpdateTopic)
 		topic.DELETE("/:sort", views.DeleteTopic)
 	}
+
 	// Question 題目 (含選項/答案)
 	question := r.Group(baseURL + "/question")
 	question.Use(authMiddleware.MiddlewareFunc())
@@ -105,18 +111,19 @@ func SetupRouter() *gin.Engine {
 		question.POST("", views.CreateQuestion)
 		question.GET("", views.ListQuestions)
 		question.GET("/:questionID", views.GetQuestion)
-		// question.PATCH("/:questionID", views.UpdateQuestion)
-		// question.DELETE("/:questionID", views.DeleteQuestion)
 		// 對使用者而言，一個問題就是一個物件
 	}
+
 	privatequestion := r.Group(privateURL + "/question")
-	question.Use(authMiddleware.MiddlewareFunc())
-	question.Use(getUserInfo())
+	privatequestion.Use(authMiddleware.MiddlewareFunc())
+	privatequestion.Use(getUserInfo())
 	{
 		privatequestion.GET("/:questionID", views.GetQuestionPrivate)
 	}
+
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Page not found"})
 	})
+
 	return r
 }

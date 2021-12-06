@@ -22,6 +22,12 @@ type Question struct {
 	// 選項/答案
 }
 
+// OptionAPIRequest 題目選項
+type OptionAPIRequest struct {
+	Content string `json:"content"`
+	Answer  bool   `json:"answer"`
+}
+
 // Option 選項 data model
 type Option struct {
 	gorm.Model
@@ -48,8 +54,8 @@ func CreateOption(option *Option) (err error) {
 }
 
 // ListQuestions 取得所有 Question
-func ListQuestions() (questions []Question, err error) {
-	err = DB.Find(&questions).Error
+func ListQuestions(userID uint) (questions []Question, err error) {
+	err = DB.Where(&Question{Author: userID}).Find(&questions).Error
 	return
 }
 
@@ -63,8 +69,8 @@ func GetQuestion(id uint) (Question, error) {
 }
 
 // ListOptionsByQuestionID 透過 questionID 取得該題目下的所有 option
-func ListOptionsByQuestionID(questionID uint) (option Option, err error) {
-	err = DB.First(&option, questionID).Error
+func ListOptionsByQuestionID(questionID uint) (option []Option, err error) {
+	err = DB.Where(&Option{QuestionID: questionID}).Find(&option).Error
 	return
 }
 

@@ -16,20 +16,22 @@ import (
 // CreateTestPaper 新增測驗卷
 func CreateTestPaper(c *gin.Context) {
 	var testpaper models.TestPaper
+	var err error
 	userID := c.MustGet("userID").(uint)
+
 	// 使用者傳過來的檔案格式(測驗卷名稱、出卷者、對應的課堂、是否亂數出題)
 	var data struct {
 		TestPaperName *string `json:"testpaper_name"`
-		Author        *uint   `json:"author"`
 		ClassID       *uint   `json:"class_id"`
-		Random        *bool   `json:"random"`
 	}
-	if err := c.BindJSON(&data); err != nil {
+
+	if err = c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Please fill the field according to the form.",
 		})
 		return
 	}
+
 	// 如果有空值，則回傳 false
 	if zero.IsZero(data) {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -37,31 +39,21 @@ func CreateTestPaper(c *gin.Context) {
 		})
 		return
 	}
+
 	testpaper.TestPaperName = *data.TestPaperName
 	testpaper.Author = userID
 	testpaper.ClassID = *data.ClassID
-	testpaper.Random = *data.Random
-	models.CreateTestPaper(&testpaper)
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Create successfully.",
-	})
-}
 
-// ListTestPapers 取得全部測驗卷的 id
-func ListTestPapers(c *gin.Context) {
-	var testpapersID []uint
-	if testpapers, err := models.ListTestPapers(); err == nil {
-		for pos := range testpapers {
-			testpapersID = append(testpapersID, testpapers[pos].ID)
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"testpapersID": testpapersID,
-		})
-	} else {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Not found.",
+	if err = models.CreateTestPaper(&testpaper); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "System error.",
 		})
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Create successfully.",
+		"testpaper_id": testpaper.ID,
+	})
 }
 
 // GetTestPaperByID 透過 id 取得測驗卷
@@ -87,7 +79,6 @@ func GetTestPaperByID(c *gin.Context) {
 		"testpaper_name": testpaper.TestPaperName,
 		"author":         testpaper.Author,
 		"class_id":       testpaper.ClassID,
-		"random":         testpaper.Random,
 	})
 }
 

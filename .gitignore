@@ -1,3 +1,4 @@
 .env
 cert
 .DS_Store
+test.db

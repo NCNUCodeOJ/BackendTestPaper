@@ -10,7 +10,6 @@ type TestPaper struct {
 	TestPaperName string `gorm:"type:text;"`
 	Author        uint   `gorm:"NOT NULL;"`
 	ClassID       uint   `gorm:"NOT NULL;"`
-	Random        bool   `gorm:"NOT NULL;"`
 	// 測驗卷名稱
 	// 出卷者
 	// 對應的課堂
@@ -18,8 +17,9 @@ type TestPaper struct {
 }
 
 // CreateTestPaper 新增測驗卷
-func CreateTestPaper(testpaper *TestPaper) {
-	DB.Create(&testpaper)
+func CreateTestPaper(testpaper *TestPaper) (err error) {
+	err = DB.Create(&testpaper).Error
+	return
 }
 
 // ListTestPapers 取得所有 testpaper
