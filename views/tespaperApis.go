@@ -26,14 +26,14 @@ func CreateTestPaper(c *gin.Context) {
 	}
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "未按照格式填寫或未使用 json",
+			"message": "Please fill the field according to the form.",
 		})
 		return
 	}
 	// 如果有空值，則回傳 false
 	if zero.IsZero(data) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "未填寫完成",
+			"message": "The field cannot be empty.",
 		})
 		return
 	}
@@ -43,7 +43,7 @@ func CreateTestPaper(c *gin.Context) {
 	testpaper.Random = *data.Random
 	models.CreateTestPaper(&testpaper)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "新增成功",
+		"message": "Create successfully.",
 	})
 }
 
@@ -59,7 +59,7 @@ func ListTestPapers(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 	}
 }
@@ -71,14 +71,14 @@ func GetTestPaperByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("testpaperID"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	testpaper, err := models.GetTestPaperByID(uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
@@ -96,7 +96,7 @@ func UpdateTestPaper(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("testpaperID"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
@@ -110,7 +110,7 @@ func UpdateTestPaper(c *gin.Context) {
 	testpaper, err := models.GetTestPaperByID(uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
@@ -118,12 +118,12 @@ func UpdateTestPaper(c *gin.Context) {
 	err = models.UpdateTestPaper(&testpaper)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "未填寫完成",
+			"message": "The field cannot be empty.",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "更新成功",
+		"message": "Update successfully.",
 	})
 }
 
@@ -132,25 +132,25 @@ func DeleteTestPaper(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Params.ByName("testpaperID"), 10, bits.UintSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "系統錯誤",
+			"message": "System error.",
 		})
 		return
 	}
 	testpaper, err := models.GetTestPaperByID(uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "查無資料",
+			"message": "Not found.",
 		})
 		return
 	}
 	err = models.DeleteTestPaper(testpaper)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
-			"message": "刪除失敗",
+			"message": "Fail.",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "刪除成功",
+		"message": "Delete successfully.",
 	})
 }
