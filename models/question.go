@@ -67,3 +67,12 @@ func ListOptionsByQuestionID(questionID uint) (option Option, err error) {
 	err = DB.First(&option, questionID).Error
 	return
 }
+
+// GetAnswerByQuestionID  透過 id 取得 question
+func GetAnswerByQuestionID(questionID uint) (Option, error) {
+	var option Option
+	if err := DB.Where("question_id = ?", questionID).First(&option).Error; err != nil {
+		return Option{}, err
+	}
+	return option, nil
+}

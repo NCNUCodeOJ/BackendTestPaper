@@ -4,14 +4,14 @@ import (
 	"gorm.io/gorm"
 )
 
-// Topic 第幾大題(要放在測驗卷的)
+// 第幾大題(要放在測驗卷的)
 type Topic struct {
 	gorm.Model
-	Description string `gorm:"type:text;"`
-	TestPaperID uint   `gorm:"NOT NULL;"`
-	Sort        uint   `gorm:"NOT NULL;"`
-	// 大題敘述
+	TestPaperID  uint    `gorm:"NOT NULL;"`
+	Distribution float64 `gorm:"NOT NULL;"`
+	Sort         uint    `gorm:"NOT NULL;"`
 	// 對應的測驗卷
+	// 配分
 	// 排序(這是第幾大題)
 }
 
@@ -20,16 +20,16 @@ func CreateTopic(topic *Topic) {
 	DB.Create(&topic)
 }
 
-// ListTopics 取得所有 topic
-func ListTopics() (topics []Topic, err error) {
-	err = DB.Find(&topics).Error
+// ListTopicsByTestpaperID 取得所有 topic
+func ListTopicsByTestpaperID(testpaperID uint) (topics []Topic, err error) {
+	err = DB.Where("testpaper_id", testpaperID).Find(&topics).Error
 	return
 }
 
 // GetTopicBySort 透過 sort 取得 topic
 func GetTopicBySort(testpaperID uint, sort uint) (Topic, error) {
 	var topic Topic
-	if err := DB.Where("id = ?", testpaperID).Where("sort = ?", sort).First(&topic).Error; err != nil {
+	if err := DB.Where("testpaper_id = ?", testpaperID).Where("sort = ?", sort).First(&topic).Error; err != nil {
 		return Topic{}, err
 	}
 	return topic, nil
