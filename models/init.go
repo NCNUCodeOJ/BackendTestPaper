@@ -35,8 +35,11 @@ func Setup() {
 		dbName := os.Getenv("DBNAME")
 		caRoot := os.Getenv("CAROOT")
 		cluster := os.Getenv("CLUSTER")
+		dbHostType := os.Getenv("DB_HOST_TYPE")
 		var addr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
-		addr += fmt.Sprintf("?sslmode=verify-full&sslrootcert=%s&options=--cluster=%s", caRoot, cluster)
+		if dbHostType == "cloud_serverless" {
+			addr += fmt.Sprintf("?sslmode=verify-full&sslrootcert=%s&options=--cluster=%s", caRoot, cluster)
+		}
 		DB, err = gorm.Open(postgres.Open(addr), &gorm.Config{})
 	}
 	if err != nil {
