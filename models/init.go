@@ -19,7 +19,7 @@ var DB *gorm.DB
 //Setup 資料庫連接設定
 func Setup() {
 	var err error
-	if gin.Mode() == "debug" {
+	if os.Getenv("GIN_MODE") != "release" {
 		err = godotenv.Load()
 		if err != nil {
 			log.Println("Error loading .env file")
@@ -32,14 +32,15 @@ func Setup() {
 		host := os.Getenv("HOST")
 		password := os.Getenv("PASSWORD")
 		port := os.Getenv("PORT")
-		dbName := os.Getenv("DBNAME")
-		caRoot := os.Getenv("CAROOT")
+		dbName := os.Getenv("DB_NAME")
+		caRoot := os.Getenv("CA_ROOT")
 		cluster := os.Getenv("CLUSTER")
 		dbHostType := os.Getenv("DB_HOST_TYPE")
 		var addr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
 		if dbHostType == "cloud_serverless" {
 			addr += fmt.Sprintf("?sslmode=verify-full&sslrootcert=%s&options=--cluster=%s", caRoot, cluster)
 		}
+		log.Println("DB addr:", addr)
 		DB, err = gorm.Open(postgres.Open(addr), &gorm.Config{})
 	}
 	if err != nil {
